@@ -1,0 +1,111 @@
+Halden VT-4 measurement bench
+
+---- 1. EQ network: digital (prewarped trapezoidal) vs analog, 20 Hz-20 kHz 
+  internal rate 176.4 kHz: 172 settings, worst |digital - analog| = 0.0675 dB (band 2 at 8200 Hz, -8.0 dB, measured at 10590 Hz)
+  => PASS  digital EQ within 0.1 dB of the analog network
+
+  internal rate 192.0 kHz: 172 settings, worst |digital - analog| = 0.0565 dB (band 2 at 8200 Hz, -8.0 dB, measured at 10590 Hz)
+  => PASS  digital EQ within 0.1 dB of the analog network
+
+---- 2. Band centres (BODY / PRESENCE bells, tolerance 0, analog network) --
+  BODY: 180:-0.06% 270:-0.06% 390:-0.06% 560:-0.06% 820:-0.06% 1200:-0.06% 1800:-0.06% 2700:-0.06%
+  PRESENCE: 1200:-0.04% 1800:-0.04% 2700:-0.04% 3900:-0.04% 5600:-0.04% 8200:-0.04%
+  PRESENCE narrow: 1200:-0.02% 1800:-0.02% 2700:-0.02% 3900:-0.02% 5600:-0.02% 8200:-0.02%
+  worst deviation of the peak from the engraved frequency: 0.06 %
+  => PASS  bell peaks on the engraved frequency within 0.25 % (nominal parts)
+
+  gain law, digital network: worst |measured - dial| = 0.006 dB (band 2 at 8200 Hz, dial -8.0 dB, measured -8.006 dB)
+  (AIR is a shelf whose plateau lies above 20 kHz: its dial is exact for the analog network,
+   and the digital shelf follows that network within test 1's limit inside 20 Hz-20 kHz)
+  => PASS  every band gives the dialled gain within 0.05 dB
+
+---- 3. SOLO listening windows: edges -3.0103 dB, centre 0 dB --------------
+  edges: worst |H(f_edge) + 3.0103 dB| = 4.34e-08 dB
+  centre: worst |H(f0)| = 3.28e-14 dB
+  running filter vs its exact response: worst 7.68e-06 dB (sines at the edges and centre)
+  => PASS  SOLO windows are exact (44.1 / 48 / 96 / 192 kHz)
+
+  band 1: window LP 20.0-70.7 Hz, max|E| 4.72 dB  |E(71)|/max = 0.500
+  band 2: window BP 262.9-2236.8 Hz, max|E| 1.97 dB  |E(263)|/max = 0.500  |E(2237)|/max = 0.500
+  band 3: window BP 2782.6-4878.5 Hz, max|E| 6.08 dB  |E(2783)|/max = 0.504  |E(4878)|/max = 0.503
+  band 4: window HP 6010.1-19845.0 Hz, max|E| 0.83 dB  |E(6010)|/max = 0.501
+  => PASS  window edges sit where the band's effect is half its maximum
+
+---- 4. DELTA null: y(theta0) + yDelta - y(theta), engine at 176.4 kHz -----
+  DELTA level (PRESENCE +3 dB on pink noise): -16.9 dB re the output
+  residual: -349.2 dB re the output
+  (info) clone-and-glide vs a unit that ran flat from power-up: -116.1 dB re the output
+  => PASS  y(theta0) + yDelta = y(theta) below -140 dB
+
+  DELTA of a flat band: peak 0
+  => PASS  DELTA of a band at 0 dB is exactly silent
+
+---- 5. M/S matrix: exact factors 0.5, identical cores ---------------------
+  L-only 1 kHz -18 dBFS: R output peak 7.1e-13 (non-zero)
+  => PASS  M/S encode-decode leaves no L->R leakage with identical cores
+
+  M/S vs LINK, flat, -30 dBFS, 30 Hz-10 kHz: worst gain difference 0.00003 dB
+  => PASS  M/S with flat settings sounds like LINK
+
+  (info) serial 1, tolerance 100 %: L->R leakage at 1 kHz -51.1 dB (core mismatch, as in hardware)
+
+---- 6. Transformers: IRON OFF / NICKEL / STEEL ----------------------------
+  small signal (-40 dBFS), gain re 1 kHz of IRON OFF:
+                20       30       50      100     1000    10000    20000
+  OFF      -0.1108  -0.0493  -0.0176  -0.0044  +0.0000  -0.0217  -0.1112
+  NICKEL   -0.1111  -0.0495  -0.0177  -0.0044  -0.0000  -0.0217  -0.1112
+  STEEL    -0.1265  -0.0563  -0.0201  -0.0050  -0.0000  -0.0237  -0.1313
+  NICKEL vs OFF: worst 0.0003 dB (20 Hz-20 kHz), 0.0001 dB (50 Hz-20 kHz)
+  => PASS  IRON OFF keeps the frequency response (only the nonlinearity goes)
+
+  harmonics, CLEAN, -18 dBFS (H2 / H3 re fundamental):
+  OFF        30 Hz: H2  -88.2 H3 -127.7 dB    100 Hz: H2  -88.9 H3 -127.8 dB   1000 Hz: H2  -88.9 H3 -127.6 dB
+  NICKEL     30 Hz: H2  -88.2 H3  -85.3 dB    100 Hz: H2  -88.9 H3 -104.2 dB   1000 Hz: H2  -88.9 H3 -126.7 dB
+  STEEL      30 Hz: H2  -88.2 H3  -79.7 dB    100 Hz: H2  -88.9 H3  -99.8 dB   1000 Hz: H2  -88.9 H3 -125.8 dB
+  H3 at 30 Hz: NICKEL -85.3 dB, STEEL -79.7 dB, OFF -127.7 dB; NICKEL at 100 Hz -104.2 dB
+  => PASS  iron H3 at 30 Hz about -85 (nickel) / -80 (steel) dB, ~-100 dB at 100 Hz, gone with IRON OFF
+
+  IRON switched 5x under a 30 Hz tone: worst 2nd difference 3.52e-06 (steady tone 5.45e-05)
+  => PASS  IRON switching is click-free
+
+---- 7. Modes: gain, THD at 1 kHz, DRIVE with loudness compensation --------
+  CLEAN  -18 dBFS: gain -0.042 THD 0.0031% (H2 -90, H3 -127)   -6 dBFS: gain -0.042 THD 0.0124% (H2 -78, H3 -103)   +0 dBFS: gain -0.042 THD 0.0250% (H2 -72, H3 -91)
+        DRIVE at -18 dBFS:   -6 dB: +0.000 dB, THD 0.002%   +0 dB: +0.000 dB, THD 0.003%   +6 dB: -0.000 dB, THD 0.006%  +12 dB: -0.000 dB, THD 0.012%
+  WARM   -18 dBFS: gain -0.042 THD 0.0367% (H2 -69, H3 -115)   -6 dBFS: gain -0.042 THD 0.1460% (H2 -57, H3 -91)   +0 dBFS: gain -0.044 THD 0.2917% (H2 -51, H3 -79)
+        DRIVE at -18 dBFS:   -6 dB: -0.000 dB, THD 0.018%   +0 dB: -0.000 dB, THD 0.037%   +6 dB: -0.000 dB, THD 0.073%  +12 dB: -0.001 dB, THD 0.146%
+  BOLD   -18 dBFS: gain -0.042 THD 0.1121% (H2 -59, H3 -105)   -6 dBFS: gain -0.044 THD 0.4466% (H2 -47, H3 -81)   +0 dBFS: gain -0.052 THD 0.8932% (H2 -41, H3 -69)
+        DRIVE at -18 dBFS:   -6 dB: -0.000 dB, THD 0.056%   +0 dB: -0.000 dB, THD 0.112%   +6 dB: -0.001 dB, THD 0.224%  +12 dB: -0.003 dB, THD 0.447%
+        BOLD, DRIVE +12, 0 dBFS: THD 11.34%, gain -1.38 dB
+  unity gain: worst |gain| at 1 kHz -18 dBFS 0.042 dB; DRIVE compensation: worst level change 0.003 dB
+  => PASS  unity gain in every mode; DRIVE changes colour, not level
+
+---- 8. Noise and hum (20 Hz-20 kHz, re a full-scale sine) -----------------
+  CLEAN: -100.2 dBFS
+  WARM : -100.3 dBFS
+  BOLD : -97.3 dBFS
+  WARM, AC heaters: -95.9 dBFS  (hum: 50 Hz -98.7 dBFS, 150 Hz -110.5 dBFS)
+  WARM, NOISE off (supply ripple only): -124.6 dBFS
+  => PASS  noise floor about -100 dBFS; with NOISE off the residual ripple stays below -115 dBFS
+
+---- 9. Analyser calibration (0 dBFS sine reads 0 dB) ----------------------
+  sines 31.5 Hz-15 kHz, 0 / -20 / -60 dBFS, 44.1 / 48 / 96 kHz:
+  peak reading worst error 0.028 dB, displayed trace maximum worst error 0.028 dB
+  => PASS  analyser calibrated within 0.1 dB
+
+---- 10. Screen curve vs measured response (-40 dBFS sines, device at 176.4 kHz) 
+  musical setting          worst |measured - screen| = 0.0002 dB (at 20 Hz)
+  extremes, BOLD, STEEL    worst |measured - screen| = 0.0006 dB (at 20 Hz)
+  M/S, side channel        worst |measured - screen| = 0.0095 dB (at 47 Hz)
+  => PASS  the curve on the screen is the measured response within 0.05 dB
+
+---- 11. CPU ---------------------------------------------------------------
+  1577 ns per stereo sample at the internal rate
+  host 44.1 kHz (x4 -> 176.4 kHz): 27.8 % of one core; host 96 kHz (x2 -> 192 kHz): 30.3 %
+  DELTA engaged runs a second device: about twice that while auditioning
+  (sink 1.34)
+
+---- 12. Torture: every parameter at random, DELTA toggling, extreme signals 
+  20 s of audio, 19319 parameter changes (633 new units), peak output 3.99 (12.0 dBFS), NaN/Inf: none
+  => PASS  stable under any automation (finite, peaks within the circuit's swing)
+
+==== 18 passed, 0 failed (274 s) ====

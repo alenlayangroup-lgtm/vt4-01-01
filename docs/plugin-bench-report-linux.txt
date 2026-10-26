@@ -1,0 +1,67 @@
+Halden VT-4 plugin bench
+
+---- P1. Latency and bypass ------------------------------------------------
+   44100 Hz: latency 6 samples (0.136 ms); bypass max error vs aligned input 0 (bit-exact)
+  => PASS  bypass is bit-exact and latency-aligned
+
+   48000 Hz: latency 6 samples (0.125 ms); bypass max error vs aligned input 0 (bit-exact)
+  => PASS  bypass is bit-exact and latency-aligned
+
+   96000 Hz: latency 4 samples (0.042 ms); bypass max error vs aligned input 0 (bit-exact)
+  => PASS  bypass is bit-exact and latency-aligned
+
+  192000 Hz: latency 0 samples (0.000 ms); bypass max error vs aligned input 0 (bit-exact)
+  => PASS  bypass is bit-exact and latency-aligned
+
+---- P2. Screen curve vs the plugin's output, oversampling included (-40 dBFS) 
+   44100 Hz host, oversampling filters (up + down): 15 k +0.00 dB 18 k -0.00 dB 19 k -0.00 dB 20 k -0.00 dB 21 k -0.11 dB
+   44100 Hz host: 33 frequencies 20 Hz-20 kHz, worst |measured - screen| = 0.0001 dB (at 23 Hz)
+  => PASS  the screen shows the plugin's real response within 0.05 dB
+
+   96000 Hz host, oversampling filters (up + down): 15 k -0.00 dB 18 k +0.00 dB 19 k +0.00 dB 20 k +0.00 dB 21 k +0.00 dB
+   96000 Hz host: 33 frequencies 20 Hz-20 kHz, worst |measured - screen| = 0.0005 dB (at 99 Hz)
+  => PASS  the screen shows the plugin's real response within 0.05 dB
+
+---- P3. SOLO through the plugin: window edges and centre, latency unchanged 
+  PRESENCE window: 2267.4-5596.3 Hz (centre 3596.8 Hz)
+    2267.4 Hz: solo/normal -3.0103 dB (expected -3.0103)
+    5596.3 Hz: solo/normal -3.0103 dB (expected -3.0103)
+    3596.8 Hz: solo/normal -0.0000 dB (expected +0.0000)
+  latency before 6, during SOLO 6 samples
+  => PASS  SOLO plays exactly the window, latency constant
+
+  DELTA on a flat band: peak 0
+  => PASS  DELTA of a flat band is silent through the whole plugin
+
+---- P4. CPU in real time, and a torture run with host automation ----------
+   44100 Hz: 29.6 % of one core (pink noise, musical setting, NOISE on)
+   44100 Hz torture: 861 blocks of random size, peak 2.39, NaN/Inf: none
+  => PASS  stable under host automation, any block size
+
+   96000 Hz: 32.8 % of one core (pink noise, musical setting, NOISE on)
+   96000 Hz torture: 1875 blocks of random size, peak 3.61, NaN/Inf: none
+  => PASS  stable under host automation, any block size
+
+---- P5. State save / restore ----------------------------------------------
+  38 parameters, 1628 bytes, worst difference after restore 0
+  => PASS  every parameter survives a save / restore
+
+---- P6. Host activation: prepareToPlay never makes the host wait ----------
+  first prepareToPlay (real time): 0.22 ms; circuit running after 148 ms (28 blocks passed the input, max error vs aligned input 0)
+  => PASS  the first activation returns at once; the input passes until the circuit is ready
+
+  reactivation: 0.31 ms, running at once: yes; vs a unit built from scratch: max difference 133.0 dB below the signal
+  => PASS  disable / enable in the host is instant and sounds the same as a fresh unit
+
+  change to 96 kHz: prepareToPlay 0.37 ms
+  => PASS  a sample-rate change does not block the host either
+
+---- P7. Bypassed: the circuit rests; switched back in it fades in cleanly -
+  CPU active 33.9 %, bypassed 0.3 % of one core; back in: largest step 0.0095 (sine slope 0.0132)
+  => PASS  bypassed costs next to nothing; re-engaging is click-free
+
+---- P8. Editor: the message thread never stalls (screen model built in the background) 
+  longest message-thread stall while the unit changes: 6.9 ms; screen follows the final unit: yes
+  => PASS  the editor stays responsive (no 0.1 s rebuilds on the message thread)
+
+==== 16 passed, 0 failed (150 s) ====

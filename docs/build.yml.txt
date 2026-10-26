@@ -1,0 +1,49 @@
+name: Build plugins
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DVT4_BUILD_TESTS=ON
+
+      - name: Build plugins
+        run: cmake --build build --config Release --parallel --target HaldenVT4_All
+
+      - name: Upload plugins
+        uses: actions/upload-artifact@v4
+        with:
+          name: HaldenVT4-${{ runner.os }}
+          path: |
+            build/HaldenVT4_artefacts/Release/VST3
+            build/HaldenVT4_artefacts/Release/AU
+          if-no-files-found: warn
+
+      # The measurement bench runs on the same machine type you will use the
+      # plugin on (Apple Silicon / Windows x64). Its report is uploaded too.
+      - name: Measurement bench
+        continue-on-error: true
+        shell: bash
+        run: |
+          cmake --build build --config Release --parallel --target vt4_bench
+          BIN=$(find build -type f \( -name vt4_bench -o -name vt4_bench.exe \) | head -n 1)
+          "$BIN" quick | tee bench-report.txt
+
+      - name: Upload bench report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-report-${{ runner.os }}
+          path: bench-report.txt
+          if-no-files-found: ignore

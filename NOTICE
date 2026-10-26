@@ -1,0 +1,23 @@
+Halden VT-4 — third-party notices
+
+1) Circuit
+
+The circuit of the Halden VT-4 (passive "bridged injection" LC network,
+stage design, power supply and transformer models) is an original design
+written for this project. It is not a copy of any commercial device.
+5751, 6922 / E88CC and GZ34 are generic vacuum-tube type designations; the
+tube models were fitted to their published characteristic curves.
+
+2) Fonts
+
+Inter (Medium, SemiBold, Display Light, Display Medium), subset and embedded
+in the plugin binary.
+    Copyright 2016-2023 The Inter Project Authors (https://github.com/rsms/inter)
+    Licensed under the SIL Open Font License, Version 1.1
+    (Resources/fonts/OFL.txt)
+
+3) JUCE
+
+Built with the JUCE framework (https://juce.com), used under its own
+licence terms (GPLv3 or a commercial JUCE licence). If you distribute
+binaries, the JUCE licence that applies to you governs that distribution.
